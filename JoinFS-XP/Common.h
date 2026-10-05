@@ -1,6 +1,6 @@
 namespace Common
 {
-	static const char* productName = "JoinFS";
+    static const char* productName = "JoinFS-XP";
 
     void DebugMsg(const char* format,  ... );
 }

@@ -7,45 +7,45 @@
 #include <cstdio>
 #include <string.h>
 #include <string>
-#include <inttypes.h>
+//#include <inttypes.h>
 #include <math.h>
-#include <stdint.h>
+//#include <stdint.h>
 
-#include <vector>
+//#include <vector>
 #include <map>
-#include <fstream>
+//#include <fstream>
 #include <string>
 
-#define XPLM200
-#define XPLM210
-#define XPLM300
-#define XPLM301
-#define XPLM303
+//#define XPLM200
+//#define XPLM210
+//#define XPLM300
+//#define XPLM301
+//#define XPLM303
 
-#ifdef _WINDOWS
-#include <WinSock2.h>
-#define IBM 1
+//#ifdef _WINDOWS
+//#include <WinSock2.h>
+//#define IBM 1
 
-#else
+//#else
 
-#include <sys/sysinfo.h>
+//#include <sys/sysinfo.h>
 #include <sys/time.h>
 #include <sys/socket.h>
-#define LIN 1
+//#define LIN 1
 
 #define min std::min
 #define max std::max
 #define sprintf_s snprintf
 #define strcpy_s snprintf
 #define strcat_s strcat
-#endif
+//#endif
 
 
 using namespace std;
 
-static const double GEODESIC_EPSILON = 0.0000001;
+//static const double GEODESIC_EPSILON = 0.0000001;
 static const double CATCH_UP_RATE = 1.5;
-static const double PI = 3.14159265359;
+//static const double PI = 3.14159265359;
 static const double FEET_PER_METRE = 3.28084;
 
 
@@ -57,7 +57,7 @@ using namespace XPMP2;
 #include "XPLMPlanes.h"
 #include "XPLMDataAccess.h"
 #include "XPLMProcessing.h"
-#include "XPLMDisplay.h"
+//#include "XPLMDisplay.h"
 #include "XPLMGraphics.h"
 #include "XPLMUtilities.h"
 #include "XPLMScenery.h"
@@ -69,12 +69,12 @@ using namespace XPMP2;
 using namespace Common;
 
 
-static double PCFreq = 0.0;
+//static double PCFreq = 0.0;
 
 #ifdef _WINDOWS
 static __int64 CounterStart = 0;
 #else
-static int64_t CounterStart = 0;
+//static int64_t CounterStart = 0;
 struct timeval ts_start, ts_end;
 #endif
 
@@ -113,7 +113,7 @@ static double GetTime()
 /// Save string copy
 inline char* strScpy(char* dest, const char* src, size_t size)
 {
-	strcpy_s(dest, size, src);
+    strcpy_s(dest, size, "%s", src);
 	dest[size - 1] = 0;               // this ensures zero-termination!
 	return dest;
 }
@@ -434,8 +434,8 @@ struct InjectedAircraft : public Aircraft
 		// in UpdatePosition()
 
 		// set callsign and nickname
-		strcpy_s(callsign, Link::MAX_CALLSIGN_LENGTH, _callsign);
-		strcpy_s(nickname, Link::MAX_NICKNAME_LENGTH, _nickname);
+        strcpy_s(callsign, Link::MAX_CALLSIGN_LENGTH, "%s", _callsign);
+        strcpy_s(nickname, Link::MAX_NICKNAME_LENGTH, "%s", _nickname);
 
 		// initialize
 		distance = 0.0;
@@ -557,7 +557,6 @@ struct InjectedAircraft : public Aircraft
 	}
 };
 
-
 // maximum network aircraft
 static const int MAX_AIRCRAFT = 19;
 // blend rate
@@ -566,12 +565,12 @@ static const double TIME_ERROR_RATE = 0.02;
 // current time
 static double now = 0.0;
 
-
 // user aircraft
 static UserAircraft userAircraft;
 // injected aircraft
 static InjectedAircraft* injectedAircraft[MAX_AIRCRAFT];
 
+/*
 static XPLMDataRef dr_elevator;
 static XPLMDataRef dr_aileron;
 static XPLMDataRef dr_rudder;
@@ -588,7 +587,7 @@ static XPLMDataRef dr_rudderTrim;
 static XPLMDataRef dr_throttle;
 static XPLMDataRef dr_prop;
 static XPLMDataRef dr_mixture;
-
+*/
 
 static XPLMDataRef dr_livery = NULL;
 
@@ -719,12 +718,14 @@ static void InitUserAircraft(UserAircraft& aircraft)
     aircraft.dr_fuelAvailable = GetDataRef("sim/flightmodel2/engines/has_fuel_flow_before_mixture");
     aircraft.dr_propFeather = GetDataRef("sim/cockpit2/engine/actuators/prop_mode");
     aircraft.dr_egt = GetDataRef("sim/flightmodel/engine/ENGN_EGT_c");
+    //aircraft.dr_egt = GetDataRef("sim/flightmodel2/engines/actuators/EGT_deg_cel");
     aircraft.dr_oilPressure = GetDataRef("sim/flightmodel/engine/ENGN_oil_press_psi");
     aircraft.dr_oilTemperature = GetDataRef("sim/flightmodel/engine/ENGN_oil_temp_c");
     aircraft.dr_fuelPressure = GetDataRef("sim/cockpit2/engine/indicators/fuel_pressure_psi");
     aircraft.dr_manifold = GetDataRef("sim/cockpit2/engine/indicators/MPR_in_hg");
     aircraft.dr_alternateAir = GetDataRef("sim/cockpit2/switches/alternate_static_air_ratio");
     aircraft.dr_cht = GetDataRef("sim/flightmodel/engine/ENGN_CHT_c");
+    //aircraft.dr_cht = GetDataRef("sim/flightmodel2/engines/actuators/CHT_deg_cel");
     aircraft.dr_fuelFlow = GetDataRef("sim/flightmodel/engine/ENGN_FF_");
     aircraft.dr_propRpm = GetDataRef("sim/flightmodel/engine/POINT_tacrad");
     aircraft.dr_afterburner = GetDataRef("sim/cockpit2/engine/actuators/afterburner_enabled");
@@ -732,7 +733,8 @@ static void InitUserAircraft(UserAircraft& aircraft)
     aircraft.dr_n2 = GetDataRef("sim/flightmodel/engine/ENGN_N2_");
     aircraft.dr_pressureRatio = GetDataRef("sim/flightmodel/engine/ENGN_EPR");
     aircraft.dr_itt = GetDataRef("sim/flightmodel/engine/ENGN_ITT_c");
-	aircraft.dr_squawk = GetDataRef("sim/cockpit/radios/transponder_code");
+    //aircraft.dr_itt = GetDataRef("sim/flightmodel2/engines/actuators/ITT_deg_cel");
+    aircraft.dr_squawk = GetDataRef("sim/cockpit/radios/transponder_code");
     aircraft.dr_navLight = GetDataRef("sim/cockpit/electrical/nav_lights_on");
     aircraft.dr_beaconLight = GetDataRef("sim/cockpit/electrical/beacon_lights_on");
     aircraft.dr_landingLight = GetDataRef("sim/cockpit/electrical/landing_lights_on");
@@ -740,11 +742,14 @@ static void InitUserAircraft(UserAircraft& aircraft)
     aircraft.dr_strobeLight = GetDataRef("sim/cockpit/electrical/strobe_lights_on");
     aircraft.dr_panelLight = GetDataRef("sim/cockpit/electrical/cockpit_lights");
 	aircraft.dr_flap_ratio_actual = GetDataRef("sim/flightmodel/controls/flaprat");
-	aircraft.dr_flap_ratio_handle = GetDataRef("sim/cockpit2/controls/flap_ratio");
-	aircraft.dr_flap_ratio_indicator = GetDataRef("sim/flightmodel2/controls/flap_handle_deploy_ratio");
-	aircraft.dr_flap_detents = GetDataRef("sim/aircraft/controls/acf_flap_detents");
+    //aircraft.dr_flap_ratio_handle = GetDataRef("sim/cockpit2/controls/flap_ratio");
+    aircraft.dr_flap_ratio_handle = GetDataRef("sim/cockpit2/controls/flap_handle_request_ratio");
+    //aircraft.dr_flap_ratio_indicator = GetDataRef("sim/flightmodel2/controls/flap_handle_deploy_ratio");
+    aircraft.dr_flap_ratio_indicator = GetDataRef("sim/flightmodel2/controls/flap_system_deploy_ratio");
+    aircraft.dr_flap_detents = GetDataRef("sim/aircraft/controls/acf_flap_detents");
     aircraft.dr_battery = GetDataRef("sim/cockpit/electrical/battery_on");
-    aircraft.dr_brakeParking = GetDataRef("sim/cockpit2/controls/parking_brake_ratio");
+    //aircraft.dr_brakeParking = GetDataRef("sim/cockpit2/controls/parking_brake_ratio");
+    aircraft.dr_brakeParking = GetDataRef("sim/cockpit2/controls/wheel_brake_ratio");
     aircraft.dr_pitot = GetDataRef("sim/cockpit/switches/pitot_heat_on");
     aircraft.dr_gear = GetDataRef("sim/cockpit/switches/gear_handle_status");
     aircraft.dr_canopy = GetDataRef("sim/cockpit/switches/canopy_req");
@@ -832,7 +837,7 @@ void OverrideFlightControl()
 		int enable = 1;
 		XPLMSetDatavi(userAircraft.dr_override_position, &enable, 0, 1);
 		// enable override
-//		XPLMSetDatai(userAircraft.dr_override_control, 1);
+        //XPLMSetDatai(userAircraft.dr_override_control, 1);
 
 		// get state
 		userAircraft.GetState();
@@ -865,7 +870,7 @@ void SetUserVelocity(UserAircraft& aircraft)
 
 
 // connect callback
-void OnConnect(Link::ConnectMsg& msg)
+void OnConnect([[maybe_unused]] Link::ConnectMsg& msg)
 {
 }
 
@@ -944,7 +949,7 @@ void OnHeartbeat(Link::HeartbeatMsg& msg)
 			const char* res = XPMPMultiplayerEnable(CPRequestAIAgain);
 			if (res[0])
 			{
-				DebugMsg("Could not enable AI planes: %s", res);
+                DebugMsg("Could not enable AI planes: %s\n", res);
 			}
 		}
 		else
@@ -993,7 +998,7 @@ void OnModel(Link::ModelMsg& msg)
 			// check if model has changed
 			if (msg.icaoType != aircraft->acIcaoType || msg.model != aircraft->acIcaoAirline || livery != aircraft->acLivery)
 			{
-				DebugMsg("Aircraft %d model changed from '%s %s %s' to '%s %s %s'.\n", msg.index, aircraft->acIcaoType, aircraft->acIcaoAirline, aircraft->acLivery, msg.icaoType, msg.model, livery);
+                DebugMsg("Aircraft %d model changed from '%s %s %s' to '%s %s %s'.\n", msg.index, aircraft->acIcaoType.c_str(), aircraft->acIcaoAirline.c_str(), aircraft->acLivery.c_str(), msg.icaoType, msg.model, livery);
 				aircraft->ChangeModel(string(msg.icaoType), string(msg.model), livery);
 			}
 		}
@@ -1009,7 +1014,7 @@ void OnModel(Link::ModelMsg& msg)
 void OnAircraftPosition(Link::AircraftPositionMsg& msg)
 {
 	// check for valid index (including user aircraft)
-	if (msg.index == 0 || msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1] != NULL)
+    if (msg.index == 0 || (msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1]) != false)
 	{
 		// override
 		if (msg.index == 0) OverrideFlightControl();
@@ -1104,7 +1109,7 @@ void OnAircraftPosition(Link::AircraftPositionMsg& msg)
 void OnObjectPosition(Link::ObjectPositionMsg& msg)
 {
 	// check for valid index (including user aircraft)
-	if (msg.index == 0 || msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1] != NULL)
+    if (msg.index == 0 || (msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1]) != false)
 	{
 		// override
 		if (msg.index == 0)
@@ -1156,7 +1161,7 @@ void OnObjectPosition(Link::ObjectPositionMsg& msg)
 void OnObjectVelocity(Link::ObjectVelocityMsg& msg)
 {
 	// check for valid index (including user aircraft)
-	if (msg.index == 0 || msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1] != NULL)
+    if (msg.index == 0 || (msg.index >= 1 && msg.index <= MAX_AIRCRAFT && injectedAircraft[msg.index - 1]) != false)
 	{
 		// override
 		if (msg.index == 0)
@@ -1314,7 +1319,7 @@ enum Event
 	EVENT_0001100A,
 };
 
-
+/*
 static void ToggleFlag(XPLMDataRef dr, int index, unsigned int mask)
 {
     // get current flags
@@ -1366,7 +1371,7 @@ static int FromFuelTank(int data)
 	}
 	return 0;
 }
-
+*/
 
 void OnEvent(Link::EventMsg& msg)
 {
@@ -1734,7 +1739,7 @@ void OnDefinition(Link::DefinitionMsg& msg)
 			// get type
 			vdr.type = msg.type;
 			// get name
-			strcpy_s(vdr.name, Link::MAX_DATAREF_LENGTH, msg.dataRefName);
+            strcpy_s(vdr.name, Link::MAX_DATAREF_LENGTH, "%s", msg.dataRefName);
 			vdr.name[Link::MAX_DATAREF_LENGTH - 1] = '\0';
 			// get dataref
 			vdr.dr = dataRef;
@@ -1768,7 +1773,7 @@ void OnRequestVariable(Link::RequestVariableMsg& msg)
 				// get type
 				vdr.type = msg.type;
 				// get name
-				strcpy_s(vdr.name, Link::MAX_DATAREF_LENGTH, msg.dataRefName);
+                strcpy_s(vdr.name, Link::MAX_DATAREF_LENGTH, "%s", msg.dataRefName);
 				vdr.name[Link::MAX_DATAREF_LENGTH - 1] = '\0';
 				// get dataref by name
 				vdr.dr = dataRef;
@@ -1780,7 +1785,7 @@ void OnRequestVariable(Link::RequestVariableMsg& msg)
 }
 
 
-static float DoModel(float elapsed, float elapsedLoop, int counter, void*)
+static float DoModel([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
     // check if client is connected
     if (Link::IsConnected())
@@ -1799,7 +1804,7 @@ static float DoModel(float elapsed, float elapsedLoop, int counter, void*)
 		msg.livery = (dr_livery != NULL) ? XPLMGetDatai(dr_livery) : 0;
 		msg.nickname[0] = '\0';
 		XPLMGetDatab(userAircraft.dr_callsign, msg.callsign, 0, Link::MAX_CALLSIGN_LENGTH);
-		strcpy_s(msg.model, Link::MAX_MODEL_LENGTH, path);
+        strcpy_s(msg.model, Link::MAX_MODEL_LENGTH, "%s", path);
 		XPLMGetDatab(userAircraft.dr_icaoType, msg.icaoType, 0, Link::MAX_ICAOTYPE_LENGTH);
 		// send user position
         Link::Send(msg);
@@ -1810,7 +1815,7 @@ static float DoModel(float elapsed, float elapsedLoop, int counter, void*)
 }
 
 
-static float DoAircraftPosition(float elapsed, float elapsedLoop, int counter, void*)
+static float DoAircraftPosition([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
 	// process link
 	Link::DoWork();
@@ -1889,7 +1894,7 @@ static float DoAircraftPosition(float elapsed, float elapsedLoop, int counter, v
 }
 
 
-static float DoState(float elapsed, float elapsedLoop, int counter, void*)
+static float DoState([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
 	// check if any labels are being shown
 	if (labelFlags)
@@ -1917,7 +1922,7 @@ static float DoState(float elapsed, float elapsedLoop, int counter, void*)
     return 1.0f;
 }
 
-static float DoVariables(float elapsed, float elapsedLoop, int counter, void*)
+static float DoVariables([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
 	// check if client is connected
 	if (Link::IsConnected())
@@ -2005,7 +2010,7 @@ static float DoVariables(float elapsed, float elapsedLoop, int counter, void*)
 	return 1.0f;
 }
 
-static float DoHeartbeat(float elapsed, float elapsedLoop, int counter, void*)
+static float DoHeartbeat([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
     // check if client is connected
     if (Link::IsConnected())
@@ -2190,7 +2195,7 @@ static void AdvancePosition(Position& pos, double time)
 }
 
 
-static float DoFrame(float elapsed, float elapsedLoop, int counter, void*)
+static float DoFrame([[maybe_unused]] float elapsed, [[maybe_unused]] float elapsedLoop, [[maybe_unused]] int counter, void*)
 {
     // get current time
     now = GetTime();
@@ -2226,7 +2231,7 @@ static float DoFrame(float elapsed, float elapsedLoop, int counter, void*)
 	return -1.0f;
 }
 
-
+/*
 // vector transform
 static void mult_matrix_vec(float dst[4], const float m[16], const float v[4])
 {
@@ -2235,7 +2240,7 @@ static void mult_matrix_vec(float dst[4], const float m[16], const float v[4])
 	dst[2] = v[0] * m[2] + v[1] * m[6] + v[2] * m[10] + v[3] * m[14];
 	dst[3] = v[0] * m[3] + v[1] * m[7] + v[2] * m[11] + v[3] * m[15];
 }
-
+*/
 
 /// This is a callback the XPMP2 calls regularly to learn about configuration settings.
 /// Only 3 are left, all of them integers.
@@ -2244,7 +2249,7 @@ int CBIntPrefsFunc(const char *, [[maybe_unused]] const char * item, int default
 	// We always want to replace dataRefs and textures upon load to make the most out of the .obj files
 	if (!strcmp(item, XPMP_CFG_ITM_REPLDATAREFS)) return 1;
 	if (!strcmp(item, XPMP_CFG_ITM_REPLTEXTURE)) return 1;      // actually...this is ON by default anyway, just to be sure
-#if DEBUG
+#ifndef DEBUG
 	// in debug version of the plugin we provide most complete log output
 	if (!strcmp(item, XPMP_CFG_ITM_MODELMATCHING)) return 1;
 	if (!strcmp(item, XPMP_CFG_ITM_LOGLEVEL)) return 0;       // DEBUG logging level
@@ -2366,7 +2371,7 @@ PLUGIN_API int XPluginEnable(void)
 	const char *res = XPMPMultiplayerInit(Common::productName, resourcePath.c_str(), CBIntPrefsFunc, "C172");
 	if (res[0])
 	{
-		DebugMsg("Initialization of XPMP2 failed: %s", res);
+        DebugMsg("Initialization of XPMP2 failed: %s\n", res);
 		return 0;
 	}
 
@@ -2374,7 +2379,7 @@ PLUGIN_API int XPluginEnable(void)
 	res = XPMPLoadCSLPackage(resourcePath.c_str());     // CSL folder root path
 	if (res[0])
 	{
-		DebugMsg("Error while loading CSL packages: %s", res);
+        DebugMsg("Error while loading CSL packages: %s\n", res);
 	}
 
 	// Register the plane notifer function
@@ -2401,9 +2406,9 @@ PLUGIN_API void XPluginDisable(void)
 }
 
 PLUGIN_API void XPluginReceiveMessage(
-	XPLMPluginID	inFromWho,
-	int				inMessage,
-	void *			inParam)
+    [[maybe_unused]] XPLMPluginID	inFromWho,
+    [[maybe_unused]] int				inMessage,
+    [[maybe_unused]] void *			inParam)
 {
 }
 

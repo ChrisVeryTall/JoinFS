@@ -17,7 +17,7 @@ static SOCKET localSocket = INVALID_SOCKET;
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/ioctl.h>
-#define LIN 1
+//#define LIN 1
 int INVALID_SOCKET = -1;
 int localSocket = INVALID_SOCKET;
 
@@ -251,12 +251,12 @@ void Link::DoWork()
 	socklen_t addressSize = sizeof(servaddr);
 #endif
 
-	int len = sizeof(clientAddress);  //len is value/resuslt 
+    //int len = sizeof(clientAddress);  //len is value/resuslt
 
 	// read messages
-    int result;
-    do
-    {
+    size_t result;
+    //do
+    //{
         // check for message
         //result = recvfrom(localSocket, buffer, 1024, 0, (SOCKADDR*)&address, &addressSize);
 
@@ -274,11 +274,12 @@ void Link::DoWork()
             {
                 // update drop time
                 dropTime = XPLMGetElapsedTime() + 120.0f;
+                //DebugMsg("MessageID %d\n", ((Msg*)buffer)->id);
 
                 // check message type
                 switch (((Msg*)buffer)->id)
                 {
-                case MSG_CONNECT:
+                case MSG_CONNECT: // Msg->id = 0
 					if (IsConnected() == false)
 					{
 						// callback
@@ -287,10 +288,11 @@ void Link::DoWork()
                     // save address
                     memcpy(&clientAddress, &servaddr, sizeof(servaddr));
 					// message
-                    DebugMsg("Client connected.\n");
+                    //DebugMsg("Client connected. Sender IP %d:%d\n", ((Msg*)buffer)->senderIp, ((Msg*)buffer)->senderPort);
+                    DebugMsg("Client connected. Sender IP %d:%d\n", clientAddress.sin_addr, clientAddress.sin_port);
                     break;
 
-				case MSG_DISCONNECT:
+                case MSG_DISCONNECT: // Msg->id = 1
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -299,7 +301,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_HEARTBEAT:
+                case MSG_HEARTBEAT:  // Msg->id = 2
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -308,7 +310,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_MODEL:
+                case MSG_MODEL: // Msg->id = 3
                     // check from client
                     if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
                     {
@@ -317,7 +319,7 @@ void Link::DoWork()
                     }
                     break;
 
-                case MSG_AIRCRAFT_POSITION:
+                case MSG_AIRCRAFT_POSITION: // Msg->id = 4
                     // check from client
                     if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
                     {
@@ -326,7 +328,7 @@ void Link::DoWork()
                     }
                     break;
 
-                case MSG_OBJECT_POSITION:
+                case MSG_OBJECT_POSITION: // Msg->id = 5
                     // check from client
                     if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
                     {
@@ -335,7 +337,7 @@ void Link::DoWork()
                     }
                     break;
 
-				case MSG_OBJECT_VELOCITY:
+                case MSG_OBJECT_VELOCITY: // Msg->id = 6
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -344,7 +346,32 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_EVENT:
+                case MSG_PLANE_STATE: // Msg->id = 7
+                    DebugMsg("MSG_PLANE_STATE received but we don't do anything with it.\n");
+                    break;
+
+                case MSG_AIRCRAFT_STATE: // Msg->id = 8
+                    DebugMsg("MSG_AIRCRAFT_STATE received but we don't do anything with it.\n");
+                    break;
+
+                case MSG_PISTON_STATE: // Msg->id = 9
+                    DebugMsg("MSG_PISTON_STATE received but we don't do anything with it.\n");
+                    break;
+
+                case MSG_TURBINE_STATE: // Msg->id = 10
+                    DebugMsg("MSG_TURBINE_STATE received but we don't do anything with it.\n");
+                    break;
+
+                case MSG_FUEL: // Msg->id = 11
+                    // check from client
+                    if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
+                    {
+                        // callback
+                        OnFuel(*(FuelMsg*)buffer);
+                    }
+                    break;
+
+               case MSG_EVENT: // Msg->id = 12
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -353,16 +380,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_FUEL:
-					// check from client
-					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
-					{
-						// callback
-						OnFuel(*(FuelMsg*)buffer);
-					}
-					break;
-
-				case MSG_REMOVE:
+                case MSG_REMOVE: // Msg->id = 13
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -371,7 +389,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_INTEGER_VARIABLE:
+                case MSG_INTEGER_VARIABLE: // Msg->id = 14
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -380,7 +398,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_FLOAT_VARIABLE:
+                case MSG_FLOAT_VARIABLE: // Msg->id = 15
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -389,7 +407,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_STRING8_VARIABLE:
+                case MSG_STRING8_VARIABLE: // Msg->id = 16
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -398,7 +416,11 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_DEFINITION:
+                case MSG_GET_DEFINITION: // Msg->id = 17
+                    DebugMsg("MSG_GET_DEFINITION received but we don't do anything with it.\n");
+                    break;
+
+                case MSG_DEFINITION: // Msg->id = 18
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -407,7 +429,7 @@ void Link::DoWork()
 					}
 					break;
 
-				case MSG_REQUEST_VARIABLE:
+                case MSG_REQUEST_VARIABLE: // Msg->id = 19
 					// check from client
 					if (memcmp(&servaddr, &clientAddress, sizeof(clientAddress)) == 0)
 					{
@@ -415,12 +437,16 @@ void Link::DoWork()
 						OnRequestVariable(*(RequestVariableMsg*)buffer);
 					}
 					break;
+                default:
+                    DebugMsg("Unknown Message Type\n");
+                    DebugMsg("MessageID %d\n", ((Msg*)buffer)->id);
+                    break;
 				}
             }
 			// data version mismatch
 			else
 			{
-				DebugMsg("Data version mismatch.\n");
+                //DebugMsg("Data version mismatch.\n"); //Comment out to stop filling up the log
 				// check for valid send
 				if (localSocket != INVALID_SOCKET && SocketAvailable())
 				{
@@ -434,7 +460,7 @@ void Link::DoWork()
 				}
 			}
         }
-    } while (result > 0);
+    //} while (result > 0);
 
     // check drop time
     if (IsConnected() && XPLMGetElapsedTime() > dropTime)

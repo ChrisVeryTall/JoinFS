@@ -1,4 +1,3 @@
-
 namespace Link
 {
 	// length of nickname

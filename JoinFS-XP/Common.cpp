@@ -1,11 +1,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#ifdef _WINDOWS
-#define IBM 1
-#else
-#define LIN 1
-#endif
+//#ifdef _WINDOWS
+//#define IBM 1
+//#else
+//#define LIN 1
+//#endif
 
 #include "XPLMUtilities.h"
 

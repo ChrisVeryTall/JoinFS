@@ -590,6 +590,8 @@ namespace JoinFS
                 {
                     if (File.Exists(FilePath))
                     {
+                        Console.WriteLine("Hub filepath = " + FilePath);
+
                         using BinaryReader reader = new(File.Open(FilePath, FileMode.Open));
                         List.Clear();
 
@@ -649,6 +651,17 @@ namespace JoinFS
                             }
 
                             log.Event(attempt == 1 ? "Loaded " + count + " hub(s)" : "Loaded " + count + " hub(s) on attempt " + attempt);
+                            int hubcount = 1;
+
+                            foreach (var hubs in List)
+                            {
+                                //if (hubs.online && policy.IgnoreNode(hubs.endPoint.Address) == false && policy.IgnoreNode(ref hubs.guid) == false)
+                                //{
+                                    //list.Hubs.Add(new HubAddress { Node = hub.nuid, Port = (ushort)hub.endPoint.Port });
+                                    Console.WriteLine("Hub[" + hubcount + "] = " + hubs.name + " | " + hubs.about + " | " + hubs.nuid + ":" + hubs.port);
+                                    hubcount ++;
+                                //}
+                            }
                         }
                         return;
                     }

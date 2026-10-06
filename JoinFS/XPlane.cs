@@ -213,12 +213,18 @@ namespace JoinFS
         /// </summary>
         public void Open()
         {
+            int port = CLIENT_PORT;
+            
             // check if node is close
             if (link.IsOpen == false)
             {
                 // try different ports
-                int port = CLIENT_PORT;
+                //int port = CLIENT_PORT;
                 while (link.Open(port) == false && port < CLIENT_PORT + 100) port++;
+            }
+            else
+            {
+                main.MonitorEvent("LocalNode is open on " + port);
             }
 
             // check port is open
@@ -234,6 +240,7 @@ namespace JoinFS
                 }
                 if (IPAddress.TryParse(addressStr, out IPAddress address) && address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 {
+                    main.MonitorEvent("Creating xPlane endpoint at " + addressStr + ":" + port);
                     // create end point
                     pluginEndPoint = new IPEndPoint(address, PLUGIN_PORT);
 
@@ -247,6 +254,7 @@ namespace JoinFS
                     byte flags = 1;
                     message.Write(flags);
                     // send message
+                    main.MonitorEvent("Sending connect message to xPlane");
                     link.Send(pluginEndPoint);
                 }
                 else
@@ -1489,7 +1497,7 @@ namespace JoinFS
                 // create reader
                 acfReader = new StreamReader(acfFile);
                 string line = "";
-                double cogY = 0.0, cogZ = 0.0, minY = 0.0;
+                double cogY = 0.0, cogZ = 0.0; //, minY = 0.0;
 
                 Dictionary<string, AcfObjectData> objectReferences = new Dictionary<string, AcfObjectData>();
 

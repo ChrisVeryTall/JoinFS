@@ -136,6 +136,8 @@ namespace JoinFS
             logName = main.storagePath + Path.DirectorySeparatorChar + LOG_FILE + "-" + port + ".txt";
             previousName = main.storagePath + Path.DirectorySeparatorChar + LOG_FILE + "-" + port + "-previous.txt";
 
+            Console.WriteLine("Log file name is: " + logName);
+
             // check for auto log
 //            if (Settings.Default.AutoLog)
             if (true)

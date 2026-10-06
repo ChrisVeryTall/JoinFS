@@ -2130,6 +2130,10 @@ namespace JoinFS
 #endif
 
                 // check for valid sim folder
+
+                simFolder="/Users/christall/Games/X-Plane-12";
+                main.MonitorEvent("Simfolder = " +simFolder);
+
                 if (simFolder.Length == 0)
                 {
                     // message
@@ -2301,7 +2305,7 @@ namespace JoinFS
                     pathList.Clear();
 
                     // get CSL folder
-                    string cslFolder = Path.Combine(simFolder, "Resources", "plugins", "JoinFS", "Resources", "CSL");
+                    string cslFolder = Path.Combine(simFolder, "Resources", "plugins", "JoinFS-XP", "Resources", "CSL");
 
                     // check for folder
                     if (Directory.Exists(cslFolder))

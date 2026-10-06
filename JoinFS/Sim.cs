@@ -237,7 +237,7 @@ namespace JoinFS
         /// <summary>
         /// Connection attempts
         /// </summary>
-        const int CHECK_CONNECTION_ATTEMPTS = 6;
+        const int CHECK_CONNECTION_ATTEMPTS = 256;
         int checkConnectionCount = 0;
 
 #if SIMCONNECT
